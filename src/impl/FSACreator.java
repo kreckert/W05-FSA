@@ -12,34 +12,38 @@ public class FSACreator {
 
     private String fsaFile = "example-1.fsa.txt";;
     private String text;
-    private ArrayList<String> inputs = new ArrayList<>();
-    private ArrayList<String> acceptingStates = new ArrayList<>();
+    ArrayList<Integer> acceptingStates;
+    BufferedReader reader;
 
     public FSACreator(String fsaFile, String text) throws Exception{
 
+        acceptingStates = new ArrayList<>();
         this.fsaFile = fsaFile;
         this.text = text;
+        reader = new BufferedReader(new FileReader(fsaFile));
         occupyMap();
     }
 
     public void occupyMap() throws Exception {
 
         //loops through fsa file
-        BufferedReader reader = new BufferedReader(new FileReader(fsaFile));
         String line = null;
         while ((line = reader.readLine()) != null) {
 
-
+            State state = createState(line);
         }
     }
 
-    public State createState(String line) {
+    public State createState(String triple) {
+
+        //checks for * accepting
+        if (triple.charAt(triple.length()) == '*') {
+
+
+        } else {
+
+        }
 
         return null;
-    }
-
-    public boolean checkStateExists(String line) {
-
-        return true;
     }
 }

@@ -9,10 +9,7 @@ public class State {
 
     private boolean accepting;
 
-    public State(boolean accepting) {
-
-        this.accepting = accepting;
-    }
+    private int name;
 
     public boolean isAccepting() {
 
