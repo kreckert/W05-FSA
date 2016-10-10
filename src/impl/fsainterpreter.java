@@ -5,8 +5,9 @@ package impl;
  */
 public class fsainterpreter {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
 
         System.out.println(1);
+        //FSACreator fsaCreator = new FSACreator("example-3.fsa.txt", "example-3.fsa.txt");
     }
 }
