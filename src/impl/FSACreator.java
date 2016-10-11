@@ -2,8 +2,8 @@ package impl;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -12,123 +12,114 @@ import java.util.HashMap;
 public class FSACreator {
 
     private String fsaFile;
-    private String text;
+    private String textFile;
 
-    private HashMap<String, Integer> fsa; //String is line from the fsa file, integer is the state
-    private ArrayList<Integer> acceptingStates;
+    private Map<Integer, state> states;
+
     private BufferedReader reader;
 
-    public FSACreator(String fsaFile, String text) throws Exception{
+    public FSACreator(String fsaFile, String textFile) throws Exception{
 
-
-        fsa = new HashMap<>();
-        acceptingStates = new ArrayList<>();
+        states = new HashMap<>();
 
         this.fsaFile = fsaFile;
-        this.text = text;
+        this.textFile = textFile;
         reader = new BufferedReader(new FileReader(fsaFile));
 
         occupyMap();
+        checkTxt();
     }
 
     /**
      *
      * @throws Exception
      */
-    public void occupyMap() throws Exception {
+    private void occupyMap() throws Exception {
 
         //loops through fsa file
-        String line = null;
+        String[] lineArray;
+        String line;
         while ((line = reader.readLine()) != null) {
 
+            //breaks if line is empty
             if (line.equals(""))
                 break;
 
-            if (checkAccepting(line)) {
+            lineArray = line.split("\\s+");
 
-                line = chopAndAddString(line);
+            checkForState(lineArray);
+        }
+    }
+
+    private void checkForState(String[] line) {
+
+        Integer key = Integer.parseInt(line[0]);
+        if (states.containsKey(key)) {
+
+            states.get(key).addInput(line);
+        } else {
+
+            state state = new state();
+            states.put(key, state);
+            states.get(key).addInput(line);
+        }
+
+        if (line.length == 4) {
+
+            states.get(key).makeAccepting();
+        }
+    }
+
+    private void checkTxt() throws Exception{
+
+        BufferedReader txtreader = new BufferedReader(new FileReader(textFile));
+        String text = "";
+        String line;
+
+        while ((line = txtreader.readLine()) != null) {
+
+            text = text + line;
+        }
+
+        if (recursiveCheck(0, text, 1)){
+
+            System.out.println("Accepted");
+        } else
+            System.out.println("Not Accepted");
+
+    }
+
+    private boolean recursiveCheck(Integer currentLetter, String text, Integer currentState) {
+
+        if (currentLetter == text.length()-1) {
+
+            if (states.get(currentState).isAccepting()) {
+
+                return true;
             }
 
-            Integer state = getState(line);
-            fsa.put(line, state);
+            return false;
         }
 
-        printHashMap();
-        printAcceptingState();
-    }
+        Character currentLetterChar = text.charAt(currentLetter);
 
-    private void printAcceptingState() {
+        if (states.get(currentState).getInputs().containsKey(currentLetterChar)) {
 
-        System.out.println();
-        System.out.println("accepting states");
-        for (int i = 0; i < acceptingStates.size(); i++) {
+            currentState = states.get(currentState).getInputs().get(currentLetterChar);
+        } else {
 
-            System.out.println(acceptingStates.get(i));
-        }
-    }
-
-    /**
-     * reutrns true if last character in the line is * and returns true
-     * @param line
-     * @return
-     */
-    public boolean checkAccepting(String line) {
-
-        if ((line.charAt(line.length()-1)) == '*') {
-
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * chops string until it's only a triple
-     * calls method to add accepting state;
-     * @param line
-     * @return
-     */
-    public String chopAndAddString(String line) {
-
-        for (int i = 0; i < line.length(); i++) {
-
-            //chops off last char of string until it's a number
-            if (line.charAt(line.length() - (i + 1)) == '*' ) {
-
-                // chops off last char of string
-                line = line.substring(0, line.length() - 2);
-            } else {
-
-                break;
-            }
+            return false;
         }
 
-        addAcceptingState(line);
-        return line;
+        return recursiveCheck(currentLetter + 1, text, currentState);
     }
 
-    /**
-     * adds state integer to arraylist
-     * @param line
-     */
-    public void addAcceptingState(String line) {
+    private void printHashMap() {
 
-        char state = line.charAt(line.length() - 1);
-        Integer intState = Character.getNumericValue(state);
-        acceptingStates.add(intState);
-    }
+        for (Integer state: states.keySet()){
 
-    public Integer getState(String line) {
-
-        char state = line.charAt(line.length() - 1);
-        Integer intState = Character.getNumericValue(state);
-        return intState;
-    }
-
-    public void printHashMap() {
-
-        for (String line: fsa.keySet()){
-
-            System.out.println(line);
+            System.out.println(state);
+            System.out.println(states.get(state).toString());
         }
     }
 }
