@@ -1,5 +1,3 @@
-package impl;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.HashMap;
@@ -11,20 +9,17 @@ import java.util.Map;
  */
 public class FSACreator {
 
-    private String fsaFile;
-    private String textFile;
-
     private Map<Integer, state> states;
 
     private BufferedReader reader;
+    private String textFile;
+    //private BufferedReader txtreader;
 
     public FSACreator(String fsaFile, String textFile) throws Exception{
 
         states = new HashMap<>();
-
-        this.fsaFile = fsaFile;
-        this.textFile = textFile;
         reader = new BufferedReader(new FileReader(fsaFile));
+        this.textFile = textFile;
 
         occupyMap();
         checkTxt();
@@ -72,7 +67,7 @@ public class FSACreator {
 
     private void checkTxt() throws Exception{
 
-        BufferedReader txtreader = new BufferedReader(new FileReader(textFile));
+        /*
         String text = "";
         String line;
 
@@ -80,25 +75,22 @@ public class FSACreator {
 
             text = text + line;
         }
+        */
 
-        if (recursiveCheck(0, text, 1)){
-
+        if (recursiveCheck(0, textFile, 1))
             System.out.println("Accepted");
-        } else
+        else
             System.out.println("Not Accepted");
-
     }
 
     private boolean recursiveCheck(Integer currentLetter, String text, Integer currentState) {
 
         if (currentLetter == text.length()-1) {
 
-            if (states.get(currentState).isAccepting()) {
-
+            if (states.get(currentState).isAccepting())
                 return true;
-            }
-
-            return false;
+            else
+                return false;
         }
 
         Character currentLetterChar = text.charAt(currentLetter);
@@ -114,6 +106,7 @@ public class FSACreator {
         return recursiveCheck(currentLetter + 1, text, currentState);
     }
 
+    /*
     private void printHashMap() {
 
         for (Integer state: states.keySet()){
@@ -122,4 +115,5 @@ public class FSACreator {
             System.out.println(states.get(state).toString());
         }
     }
+    */
 }
