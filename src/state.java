@@ -36,6 +36,11 @@ public class state {
         this.accepting = true;
     }
 
+    /**
+     * prints all inputs and which state they go to
+     *
+     * @return
+     */
     public String toString() {
 
         String returnString = "";
@@ -46,9 +51,8 @@ public class state {
             returnString = returnString + (key + " " + value + "\n");
         }
 
-        if (accepting) {
+        if (accepting)
             returnString = returnString + "accepting\n";
-        }
 
         return returnString;
     }
